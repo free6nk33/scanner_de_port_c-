@@ -43,7 +43,7 @@ void scanPort(const string &ip, int port, const string &banner) {
     if(regex_search(banner,matches,versionRegex)) {
         return matches[0];
     }else{
-        return "Version non trouvée";
+        return "Version non trouvee";
     }
 
 
@@ -52,7 +52,7 @@ void scanPort(const string &ip, int port, const string &banner) {
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
-        cerr << "Erreur lors de la création du socket.\n";
+        cerr << "Erreur creation du socket\n";
         return;
     }
 
