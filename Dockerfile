@@ -2,28 +2,30 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+
 RUN apt-get update && \
     apt-get install -y \
-    apache2 \            # Apache web server
-    openssh-server \     # SSH server
-    mysql-server \       # MySQL server
-    vsftpd \             # FTP server
-    && apt-get clean     # Clean up unnecessary package files
+    apache2 \
+    openssh-server \
+    mysql-server \
+    vsftpd \
+    supervisor && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
+# Préparer les services
+RUN mkdir /var/run/sshd && \
+    echo 'root:root' | chpasswd && \
+    echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-    RUN mkdir /var/run/sshd
-RUN echo 'root:root' | chpasswd   
+# Configurer le superviseur
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
+# Répertoires de travail
 WORKDIR /scanner
 
-EXPOSE 80
-EXPOSE 21
-EXPOSE 22
-EXPOSE 3306
 
-CMD service mysql start && \
-    service vsftpd start && \
-    service apache2 start && \
-    /usr/sbin/sshd -D  # Keep SSH running in the foreground
+EXPOSE 80 21 22 3306
+
+# Commande par défaut
+CMD ["/usr/bin/supervisord"]
